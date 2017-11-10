@@ -29,6 +29,9 @@ class CardPile:
     def __init__(self):
         self.pile = collections.defaultdict(int)
 
+    def look(self, card):
+        return self.pile[card]
+
     def add_n(self, card, n):
         self.pile[card] += n
 
