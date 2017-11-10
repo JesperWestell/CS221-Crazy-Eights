@@ -56,7 +56,9 @@ class GameState:
                  numStartingCards,
                  suits,
                  ranks,
-                 multiplicity):
+                 multiplicity
+                 ):
+
         self.numPlayers = 2
         self.numStartingCards = numStartingCards
         self.deck = self.initializeDeck(suits, ranks, multiplicity)
@@ -87,6 +89,12 @@ class GameState:
     def initializeCardOnTable(self):
         card = self.deck.takeRandomly()
         return card
+
+    def isEnd(self):
+        for hand in self.hands:
+            if hand.isEmpty():
+                return True
+        return False
 
     def getLegalActions(self):
         """
@@ -127,6 +135,7 @@ class GameState:
         newGameState.player = (newGameState.player + 1) % 2
         return newGameState
 
+
 class CrazyEightsGame:
     def __init__(self, numStartingCards = 6,
                  suits = [Suit.HEART,Suit.DIAMOND,Suit.CLUB,Suit.SPADE],
@@ -156,16 +165,11 @@ class CrazyEightsGame:
                           self.numStartingCards,
                           self.suits,
                           self.ranks,
-                          self.multiplicity)
+                          self.multiplicity
+                         )
 
     def Player(self, gameState):
         return gameState.player
-
-    def isEnd(self, gameState):
-        for hand in gameState.hands:
-            if hand.isEmpty():
-                return True
-        return False
 
     def Utility(self, gameState):
         for i,hand in gameState.hands:

@@ -37,7 +37,8 @@ class Game:
         CEG = CrazyEightsGame(startingPlayer=agentIndex)
         gameState = CEG.startState()
 
-        while not CEG.isEnd(gameState):
+        #changed here, isEnd() as a function of gameState, not of CEG.
+        while not gameState.isEnd():
             agent = self.agents[agentIndex]
             if self.verbose:
                 print '\nAgent %s\'s turn' % agentIndex
