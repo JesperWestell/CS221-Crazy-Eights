@@ -1,6 +1,7 @@
 import random, collections
 import util
 from copy import copy
+# TEST
 
 class Suit:
     SPADE = 'spade'
