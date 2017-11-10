@@ -16,7 +16,7 @@ class KeyboardAgent(Agent):
         print('Cards in hand: %s' % ['%s : %s' % (card, state.hand.pile[card]) for
                                    card in state.hand.pile])
         while True:
-            print 'legal actions: %s ' % ['%s ' % a + (' '.join([ '%s %s' % (card.rank, card.suit) for card in cards])
+            print 'legal actions: %s ' % ['%s' % a + (' ' + ' '.join([ '%s %s' % (card.rank, card.suit) for card in cards])
                                                        if cards != None else '') for a,cards in state.getLegalActions()]
             x = raw_input('Make action: ').split()
             inputAction = x[0]
