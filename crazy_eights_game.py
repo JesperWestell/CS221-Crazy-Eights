@@ -23,12 +23,20 @@ class Card:
     def __repr__(self):
         return '%s of %ss' % (self.rank,self.suit)
 
-    def __gt__(self, card2):
+    def __hash__(self):
+        return hash((self.suit, self.rank))
+
+    def __eq__(self, card2):
+        if type(card2) == str:
+            return False
         return self.suit == card2.suit and self.rank == card2.rank
 
 class CardPile:
     def __init__(self):
         self.pile = collections.defaultdict(int)
+
+    def look(self, card):
+        return self.pile[card]
 
     def add_n(self, card, n):
         self.pile[card] += n
@@ -61,6 +69,9 @@ class GameState:
 
         self.numPlayers = 2
         self.numStartingCards = numStartingCards
+        self.suits = suits
+        self.ranks = ranks
+        self.multiplicity = multiplicity
         self.deck = self.initializeDeck(suits, ranks, multiplicity)
         self.hands = self.initializeHands()
         self.player = startingPlayer
@@ -133,8 +144,17 @@ class GameState:
                     newGameState.hands[self.player].remove(card)
                 newGameState.cardOnTable = cards[-1]
         newGameState.player = (newGameState.player + 1) % 2
+        if newGameState.deck.isEmpty():
+            newGameState.deck = self.reshuffleDeck()
         return newGameState
 
+    def reshuffleDeck(self):
+        deck = self.initializeDeck(self.suits, self.ranks, self.multiplicity)
+        for hand in self.hands:
+            for card in hand.pile.keys():
+                for i in range(hand.look(card)):
+                    deck.remove(card)
+        return deck
 
 class CrazyEightsGame:
     def __init__(self, numStartingCards = 6,
@@ -175,9 +195,3 @@ class CrazyEightsGame:
         for i,hand in gameState.hands:
             if hand.isEmpty():
                 return float('inf') if i == 0 else -float('inf')
-
-
-game = CrazyEightsGame(20,[Suit.HEART,Suit.DIAMOND],[1,2,3,4,5,6,7,8],4)
-gameState = game.startState()
-actions = gameState.getLegalActions()
-gameState.getSuccessor(actions[0])
