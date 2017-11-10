@@ -11,7 +11,7 @@ class OracleAgent(Agent):
         self.keys = []
 
     def getAction(self, state):
-        actions =  state.getLegalActions()
+        actions = state.getLegalActions()
         hand = self.createHand(state.getHand())
         stack_card = state.getCardOnTable()
         draw_count = state.getNumsTaken()
