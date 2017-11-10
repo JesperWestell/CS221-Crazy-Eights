@@ -62,15 +62,10 @@ class OracleAgent(Agent):
                     suitcount.setdefault(card_.suit, 0)
                     if not card_.rank == "8":  # don't count eights
                         suitcount[card_.suit] += 1
-                # print("Suitcount", suitcount)
 
                 newsuit = max(suitcount, key=suitcount.get)  # select plentiest suit
-                print ('HEeeeeeeeej')
                 return card, newsuit
         else:
-            print 'no card to play'
             if draw_count < 3:
-                print("AI draws.")
                 return "draw"
-            print("AI passes.")
             return "pass"
