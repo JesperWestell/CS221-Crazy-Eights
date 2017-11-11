@@ -59,6 +59,12 @@ class CardPile:
     def isEmpty(self):
         return not bool(self.pile)
 
+    def size(self):
+        size = 0
+        for k in self.pile.keys():
+            size += self.pile[k]
+        return size
+
 class GameState:
     def __init__(self, startingPlayer,
                  numStartingCards,
@@ -154,6 +160,7 @@ class GameState:
             for card in hand.pile.keys():
                 for i in range(hand.look(card)):
                     deck.remove(card)
+        deck.remove(self.cardOnTable)
         return deck
 
 class CrazyEightsGame:
