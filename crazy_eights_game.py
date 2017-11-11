@@ -33,7 +33,13 @@ class Card:
 
 class CardPile:
     def __init__(self):
-        self.pile = collections.defaultdict(int)
+        self.pile = collections.Counter()
+
+    def __add__(self, other):
+        new = CardPile()
+        new.pile = copy(self.pile)
+        new.pile += other.pile
+        return new
 
     def look(self, card):
         return self.pile[card]
@@ -48,7 +54,7 @@ class CardPile:
         strcard = str(card)
         self.pile[card] -= 1
         assert self.pile[card] >= 0, 'card to remove was not in pile'
-        if self.pile[card] == 0:
+        if self.pile[card] <= 0:
             del self.pile[card]
 
     def takeRandomly(self):
@@ -66,6 +72,9 @@ class CardPile:
         return size
 
 class GameState:
+    '''
+    GameState for Crazy Eights Card Game
+    '''
     def __init__(self, startingPlayer,
                  numStartingCards,
                  suits,
@@ -92,9 +101,8 @@ class GameState:
                 deck.add_n(card, multiplicity)
         return deck
 
-
     def initializeHands(self):
-        hands =  []
+        hands = []
         for p in range(self.numPlayers):
             hand = CardPile()
             for i in range(self.numStartingCards):
@@ -113,7 +121,7 @@ class GameState:
                 return True
         return False
 
-    def getLegalActions(self):
+    def getLegalActions(self,unknownCards = None):
         """
         :param gameState: current game state
         :return: a list of actions that can be taken from the given game state
@@ -121,28 +129,20 @@ class GameState:
                 action - in {'take','play','pass'}
                 cards - list of cards the player will play, in the correct order
         """
-        actions = []
-        actions.append((Actions.PASS, None))
-        if self.numsTaken[self.player] < 3 and bool(self.deck.pile):
-            actions.append((Actions.TAKE,None))
-        for card in self.hands[self.player].pile.keys():
-            if self.cardOnTable.suit == card.suit or \
-                self.cardOnTable.rank == card.rank or \
-                card.rank == 8:
-                actions.append((Actions.PLAY, [card]))
-                cardsWithSameRank = [c for c in self.hands[self.player].pile.keys()
-                       if c.rank == card.rank and c != card]
-                allCombinations = util.getCombinations(cardsWithSameRank)
-                for c in allCombinations:
-                    actions.append((Actions.PLAY,[card] + c))
-        return actions
+
+        cardOnTable = self.cardOnTable
+        hand = self.hands[self.player]
+        numsTaken = self.numsTaken[self.player]
+        deckSize = self.deck.size()
+        return getLegalActions(cardOnTable, hand, numsTaken, deckSize)
 
     def getSuccessor(self, newAction):
         newGameState = copy(self)
         action, cards = newAction
         if action == Actions.TAKE:
             newGameState.numsTaken[self.player] += 1
-            newGameState.hands[self.player].add(newGameState.deck.takeRandomly())
+            card = newGameState.deck.takeRandomly()
+            newGameState.hands[self.player].add(card)
         else:
             newGameState.numsTaken[self.player] = 0
             if action == Actions.PLAY:
@@ -162,6 +162,107 @@ class GameState:
                     deck.remove(card)
         deck.remove(self.cardOnTable)
         return deck
+
+class Observation:
+    '''
+        Observation will serve as a 'fake' version of GameState, with the same
+        functions, but without the real values of the deck and opponents hand
+        Objects of this class will be used by agents when deciding on the best
+        action to make
+    '''
+    def __init__(self, agentIndex, gameState):
+        self.observer = agentIndex
+        self.player = agentIndex
+        self.suits = gameState.suits
+        self.ranks = gameState.ranks
+        self.multiplicity = gameState.multiplicity
+        self.hand = gameState.hands[self.observer]
+        self.handsizes = [hand.size() for hand in gameState.hands]
+        self.cardOnTable = gameState.cardOnTable
+        self.numsTaken = copy(gameState.numsTaken)
+        self.legalActions = gameState.getLegalActions()
+        self.deckSize = gameState.deck.size()
+        self.unknowns = gameState.deck
+        for i in range(len(gameState.hands)):
+            if i != self.observer:
+                self.unknowns += gameState.hands[i]
+
+    def getSuits(self):
+        return self.suits
+
+    def getHandSize(self):
+        return self.handsizes[self.player]
+
+    def getRanks(self):
+        return self.ranks
+
+    def getMultiplicity(self):
+        return self.multiplicity
+
+    def getHand(self):
+        return self.hand
+
+    def getCardOnTable(self):
+        return self.cardOnTable
+
+    def getNumsTaken(self):
+        return self.numsTaken[self.player]
+
+    def isEmptyDeck(self):
+        return self.getDeckSize() == 0
+
+    def getDeckSize(self):
+        return self.deckSize
+
+    def getLegalActions(self):
+        cardOnTable = self.getCardOnTable()
+        hand = self.getHand() if self.player == self.observer else self.unknowns
+        numsTaken = self.getNumsTaken()
+        deckSize = self.getDeckSize()
+        return getLegalActions(cardOnTable, hand, numsTaken, deckSize)
+
+    def getSuccessor(self,newAction):
+        newObservation = copy(self)
+        action, cards = newAction
+        if action == Actions.TAKE:
+            newObservation.numsTaken[self.player] += 1
+            newObservation.handsizes[self.player] += 1
+            newObservation.deckSize -= 1
+        else:
+            newObservation.numsTaken[self.player] = 0
+            if action == Actions.PLAY:
+                for card in cards:
+                    newObservation.handsizes[self.player] -= 1
+                    if self.observer != self.player:
+                        newObservation.unknowns.remove(card)
+                newObservation.cardOnTable = cards[-1]
+        newObservation.player = (newObservation.player + 1) % 2
+        if newObservation.isEmptyDeck():
+            self.reshuffleDeck()
+        return newObservation
+
+    def reshuffleDeck(self):
+        self.deckSize = len(self.getSuits())*len(self.getRanks())*self.getMultiplicity() \
+        - sum(handSize for handSize in self.handsizes) - 1
+
+
+def getLegalActions(cardOnTable, hand, numsTaken, deckSize):
+    actions = []
+    actions.append((Actions.PASS, None))
+    if numsTaken < 3 and deckSize > 0:
+        actions.append((Actions.TAKE, None))
+    for card in hand.pile.keys():
+        if cardOnTable.suit == card.suit or \
+                        cardOnTable.rank == card.rank or \
+                        card.rank == 8:
+            actions.append((Actions.PLAY, [card]))
+            cardsWithSameRank = [c for c in hand.pile.keys()
+                                 if c.rank == card.rank and c != card]
+            allCombinations = util.getCombinations(cardsWithSameRank)
+            for c in allCombinations:
+                actions.append((Actions.PLAY, [card] + c))
+    return actions
+
 
 class CrazyEightsGame:
     def __init__(self, numStartingCards = 6,
