@@ -4,6 +4,8 @@ import sys,random,os,collections
 from keyboard_agent import KeyboardAgent
 from baseline_agent import BaselineAgent
 from oracle import OracleAgent
+from minimax_agent import MinimaxAgent
+
 
 def loadAgent(pacman):
   # Looks through all pythonPath Directories for the right module,
@@ -84,6 +86,7 @@ def runGames(numGames, agents, verbose):
         if verbose >= 2:
             print_winnings(times_won,agents)
     if verbose >= 1:
+        print '\n-- Final Score --'
         print_winnings(times_won, agents)
     return times_won
 

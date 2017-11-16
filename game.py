@@ -2,6 +2,7 @@ from crazy_eights_game import CrazyEightsGame, Observation
 from keyboard_agent import KeyboardAgent
 from baseline_agent import BaselineAgent
 from oracle import OracleAgent
+from minimax_agent import MinimaxAgent
 from copy import copy
 import game_rules
 from crazy_eights_game import Suit

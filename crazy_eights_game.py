@@ -1,6 +1,6 @@
 import random, collections
 import util
-from copy import copy
+import copy
 # TEST
 
 class Suit:
@@ -37,7 +37,7 @@ class CardPile:
 
     def __add__(self, other):
         new = CardPile()
-        new.pile = copy(self.pile)
+        new.pile = copy.copy(self.pile)
         new.pile += other.pile
         return new
 
@@ -137,7 +137,7 @@ class GameState:
         return getLegalActions(cardOnTable, hand, numsTaken, deckSize)
 
     def getSuccessor(self, newAction):
-        newGameState = copy(self)
+        newGameState = copy.deepcopy(self)
         action, cards = newAction
         if action == Actions.TAKE:
             newGameState.numsTaken[self.player] += 1
@@ -163,6 +163,11 @@ class GameState:
         deck.remove(self.cardOnTable)
         return deck
 
+    def Utility(self):
+        for i,hand in self.hands:
+            if hand.isEmpty():
+                return float('inf') if i == 0 else -float('inf')
+
 class Observation:
     '''
         Observation will serve as a 'fake' version of GameState, with the same
@@ -179,7 +184,7 @@ class Observation:
         self.hand = gameState.hands[self.observer]
         self.handsizes = [hand.size() for hand in gameState.hands]
         self.cardOnTable = gameState.cardOnTable
-        self.numsTaken = copy(gameState.numsTaken)
+        self.numsTaken = copy.copy(gameState.numsTaken)
         self.legalActions = gameState.getLegalActions()
         self.deckSize = gameState.deck.size()
         self.unknowns = gameState.deck
@@ -222,7 +227,7 @@ class Observation:
         return getLegalActions(cardOnTable, hand, numsTaken, deckSize)
 
     def getSuccessor(self,newAction):
-        newObservation = copy(self)
+        newObservation = copy.deepcopy(self)
         action, cards = newAction
         if action == Actions.TAKE:
             newObservation.numsTaken[self.player] += 1
@@ -244,6 +249,17 @@ class Observation:
     def reshuffleDeck(self):
         self.deckSize = len(self.getSuits())*len(self.getRanks())*self.getMultiplicity() \
         - sum(handSize for handSize in self.handsizes) - 1
+
+    def isEnd(self):
+        for size in self.handsizes:
+            if size == 0:
+                return True
+        return False
+
+    def Utility(self):
+        for i,hand in enumerate(self.handsizes):
+            if hand == 0:
+                return float('inf') if i == 0 else -float('inf')
 
 
 def getLegalActions(cardOnTable, hand, numsTaken, deckSize):
@@ -298,8 +314,3 @@ class CrazyEightsGame:
 
     def Player(self, gameState):
         return gameState.player
-
-    def Utility(self, gameState):
-        for i,hand in gameState.hands:
-            if hand.isEmpty():
-                return float('inf') if i == 0 else -float('inf')
