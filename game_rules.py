@@ -1,4 +1,12 @@
-from crazy_eights_game import Suit
+
+CHAIN_RULE = False
+
+class Suit:
+    SPADE = 'spade'
+    HEART = 'heart'
+    CLUB = 'club'
+    DIAMOND = 'diamond'
+
 
 class ClassicGameRules:
     suits = [Suit.HEART,Suit.DIAMOND,Suit.CLUB,Suit.SPADE]

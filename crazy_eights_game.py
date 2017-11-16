@@ -1,13 +1,9 @@
 import random, collections
+import game_rules
+from game_rules import Suit
 import util
 import copy
 # TEST
-
-class Suit:
-    SPADE = 'spade'
-    HEART = 'heart'
-    CLUB = 'club'
-    DIAMOND = 'diamond'
 
 class Actions:
     PASS = 'pass'
@@ -272,11 +268,12 @@ def getLegalActions(cardOnTable, hand, numsTaken, deckSize):
                         cardOnTable.rank == card.rank or \
                         card.rank == 8:
             actions.append((Actions.PLAY, [card]))
-            cardsWithSameRank = [c for c in hand.pile.keys()
+            if game_rules.CHAIN_RULE:
+                cardsWithSameRank = [c for c in hand.pile.keys()
                                  if c.rank == card.rank and c != card]
-            allCombinations = util.getCombinations(cardsWithSameRank)
-            for c in allCombinations:
-                actions.append((Actions.PLAY, [card] + c))
+                allCombinations = util.getCombinations(cardsWithSameRank)
+                for c in allCombinations:
+                    actions.append((Actions.PLAY, [card] + c))
     return actions
 
 
