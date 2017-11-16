@@ -3,25 +3,29 @@ from keyboard_agent import KeyboardAgent
 from baseline_agent import BaselineAgent
 from oracle import OracleAgent
 from copy import copy
-from game_rules import gameRules
+import game_rules
 from crazy_eights_game import Suit
 import util
 
 
 class Game:
-    def __init__(self):
+    def __init__(self,
+                 gameRules = game_rules.ClassicGameRules,
+                 agents = [OracleAgent(index=0), BaselineAgent(index=1)],
+                 verbose = True):
+        self.gameRules = gameRules
         self.startingIndex = 0
-        self.agents = [OracleAgent(index=0), BaselineAgent(index=1)]
+        self.agents = agents
         self.numAgents = 2
-        self.verbose = True
+        self.verbose = verbose
 
     def run(self):
         agentIndex = self.startingIndex
         CEG = CrazyEightsGame(startingPlayer=agentIndex,
-                              numStartingCards=gameRules.numStartingCards,
-                              suits=gameRules.suits,
-                              ranks=gameRules.ranks,
-                              multiplicity=gameRules.multiplicity)
+                              numStartingCards=self.gameRules.numStartingCards,
+                              suits=self.gameRules.suits,
+                              ranks=self.gameRules.ranks,
+                              multiplicity=self.gameRules.multiplicity)
         gameState = CEG.startState()
 
         #changed here, isEnd() as a function of gameState, not of CEG.
@@ -35,8 +39,8 @@ class Game:
             if self.verbose:
                 print('Agent %s performed action %s' % (agentIndex,action))
             agentIndex = (agentIndex + 1) % self.numAgents
+        winner = (agentIndex - 1) % self.numAgents
         if self.verbose:
-            print '\nGame over, agent %s won' % ((agentIndex - 1) % self.numAgents)
+            print '\nGame over, agent %s won' % winner
+        return winner
 
-game = Game()
-game.run()
