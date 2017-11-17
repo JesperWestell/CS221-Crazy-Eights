@@ -1,7 +1,7 @@
 from agent import Agent
 import random
 
-class MinimaxAgent(Agent):
+class BasicMinimaxAgent(Agent):
     """
     A minimax agent.
     """

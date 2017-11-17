@@ -4,7 +4,7 @@ import sys,random,os,collections
 from keyboard_agent import KeyboardAgent
 from baseline_agent import BaselineAgent
 from oracle import OracleAgent
-from minimax_agent import MinimaxAgent
+from basic_minimax_agent import BasicMinimaxAgent
 
 
 def loadAgent(pacman):
