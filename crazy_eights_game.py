@@ -3,7 +3,6 @@ import game_rules
 from game_rules import Suit
 import util
 import copy
-# TEST
 
 class Actions:
     PASS = 'pass'
@@ -75,10 +74,11 @@ class GameState:
                  numStartingCards,
                  suits,
                  ranks,
-                 multiplicity
+                 multiplicity,
+                 numPlayers
                  ):
 
-        self.numPlayers = 2
+        self.numPlayers = numPlayers
         self.numStartingCards = numStartingCards
         self.suits = suits
         self.ranks = ranks
@@ -117,7 +117,7 @@ class GameState:
                 return True
         return False
 
-    def getLegalActions(self,unknownCards = None):
+    def getLegalActions(self):
         """
         :param gameState: current game state
         :return: a list of actions that can be taken from the given game state
@@ -145,7 +145,7 @@ class GameState:
                 for card in cards:
                     newGameState.hands[self.player].remove(card)
                 newGameState.cardOnTable = cards[-1]
-        newGameState.player = (newGameState.player + 1) % 2
+        newGameState.player = (newGameState.player + 1) % self.numPlayers
         if newGameState.deck.isEmpty():
             newGameState.deck = self.reshuffleDeck()
         return newGameState
@@ -184,6 +184,7 @@ class Observation:
         self.legalActions = gameState.getLegalActions()
         self.deckSize = gameState.deck.size()
         self.unknowns = gameState.deck
+        self.numPlayers = gameState.numPlayers
         for i in range(len(gameState.hands)):
             if i != self.observer:
                 self.unknowns += gameState.hands[i]
@@ -237,7 +238,7 @@ class Observation:
                     if self.observer != self.player:
                         newObservation.unknowns.remove(card)
                 newObservation.cardOnTable = cards[-1]
-        newObservation.player = (newObservation.player + 1) % 2
+        newObservation.player = (newObservation.player + 1) % len(self.handsizes) # Number of players
         if newObservation.isEmptyDeck():
             self.reshuffleDeck()
         return newObservation
@@ -255,8 +256,8 @@ class Observation:
     def Utility(self):
         for i,hand in enumerate(self.handsizes):
             if hand == 0:
-                return float('inf') if i == 0 else -float('inf')
-
+                return float('inf') if i == self.observer else -float('inf')
+        return 0
 
 def getLegalActions(cardOnTable, hand, numsTaken, deckSize):
     actions = []
@@ -276,13 +277,13 @@ def getLegalActions(cardOnTable, hand, numsTaken, deckSize):
                     actions.append((Actions.PLAY, [card] + c))
     return actions
 
-
 class CrazyEightsGame:
     def __init__(self, numStartingCards = 6,
                  suits = [Suit.HEART,Suit.DIAMOND,Suit.CLUB,Suit.SPADE],
                  ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13],
                  multiplicity = 1,
-                 startingPlayer = 0):
+                 startingPlayer = 0,
+                 numPlayers = 2):
         """
         startingPlayer: index of player starting the game
         numStartingCards: integer representing number of cards each player will
@@ -300,14 +301,15 @@ class CrazyEightsGame:
         self.player = startingPlayer
         self.numStartingCards = numStartingCards
         self.startingPlayer = startingPlayer
+        self.numPlayers = numPlayers
 
     def startState(self):
         return GameState(self.startingPlayer,
                           self.numStartingCards,
                           self.suits,
                           self.ranks,
-                          self.multiplicity
-                         )
+                          self.multiplicity,
+                          self.numPlayers)
 
     def Player(self, gameState):
         return gameState.player

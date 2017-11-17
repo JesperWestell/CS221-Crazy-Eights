@@ -52,9 +52,9 @@ def readCommand(argv):
 
     # Choose agents
     agents = options.agents.split(',')
-    if len(agents) != 2:
+    if len(agents) < 2:
         raise Exception(
-            'Must use two agents! Currently adding ' + len(agents))
+            'Must use more than 1 agent! Currently adding %s' % len(agents))
     for a in agents:
         loadAgent(a)
 
@@ -68,21 +68,21 @@ def readCommand(argv):
 
 def print_winnings(times_won, agents):
     print
-    for a in times_won:
-        print a + ' winnings: ' + str(times_won[a])
-    winRate = 100 * times_won[agents[0]] / float(
-        times_won[agents[0]] + times_won[agents[1]])
+    totalWinnings = 0
+    for i,a in enumerate(agents):
+        print a + ' winnings: ' + str(times_won[i])
+        totalWinnings += times_won[i]
+    winRate = 100 * times_won[0] / float(
+        totalWinnings)
     print 'Win Rate: %.2f %%' % winRate
 
 def runGames(numGames, agents, verbose):
     instantiated_agents=[eval(a+'()') for a in agents]
     game = Game(agents=instantiated_agents, verbose=verbose>=3)
-    times_won = collections.Counter()
-    for a in agents:
-        times_won[a] = 0
+    times_won = [0 for i in range(len(agents))]
     for i in range(numGames):
         winner = game.run()
-        times_won[agents[winner]] += 1
+        times_won[winner] += 1
         if verbose >= 2:
             print_winnings(times_won,agents)
     if verbose >= 1:

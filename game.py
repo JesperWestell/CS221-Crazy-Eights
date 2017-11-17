@@ -17,7 +17,7 @@ class Game:
         self.gameRules = gameRules
         self.startingIndex = 0
         self.agents = agents
-        self.numAgents = 2
+        self.numAgents = len(agents)
         self.verbose = verbose
 
     def run(self):
@@ -26,7 +26,8 @@ class Game:
                               numStartingCards=self.gameRules.numStartingCards,
                               suits=self.gameRules.suits,
                               ranks=self.gameRules.ranks,
-                              multiplicity=self.gameRules.multiplicity)
+                              multiplicity=self.gameRules.multiplicity,
+                              numPlayers=self.numAgents)
         gameState = CEG.startState()
 
         #changed here, isEnd() as a function of gameState, not of CEG.
