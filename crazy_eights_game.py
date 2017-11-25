@@ -139,21 +139,24 @@ class GameState:
             newGameState.numsTaken[self.player] += 1
             card = newGameState.deck.takeRandomly()
             newGameState.hands[self.player].add(card)
+            if newGameState.deck.isEmpty():
+                newGameState.deck = self.reshuffleDeck()
+                newGameState.deck.remove(card)
         else:
             newGameState.numsTaken[self.player] = 0
             if action == Actions.PLAY:
                 for card in cards:
                     newGameState.hands[self.player].remove(card)
                 newGameState.cardOnTable = cards[-1]
+            if newGameState.deck.isEmpty():
+                newGameState.deck = self.reshuffleDeck()
         newGameState.player = (newGameState.player + 1) % self.numPlayers
-        if newGameState.deck.isEmpty():
-            newGameState.deck = self.reshuffleDeck()
         return newGameState
 
     def reshuffleDeck(self):
         deck = self.initializeDeck(self.suits, self.ranks, self.multiplicity)
         for hand in self.hands:
-            for card in hand.pile.keys():
+            for card in hand.pile:
                 for i in range(hand.look(card)):
                     deck.remove(card)
         deck.remove(self.cardOnTable)

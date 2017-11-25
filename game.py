@@ -11,16 +11,21 @@ import util
 
 class Game:
     def __init__(self,
-                 gameRules = game_rules.ClassicGameRules,
-                 agents = [OracleAgent(index=0), BaselineAgent(index=1)],
-                 verbose = True):
+                 gameRules=game_rules.ClassicGameRules,
+                 agents=[OracleAgent(index=0), BaselineAgent(index=1)],
+                 verbose=True):
         self.gameRules = gameRules
         self.startingIndex = 0
         self.agents = agents
         self.numAgents = len(agents)
         self.verbose = verbose
 
-    def run(self):
+    def run(self, startState=None):
+        """
+        :param startState: optional parameter for playing the game from
+        a given state.
+        :return: index of the winning agent
+        """
         agentIndex = self.startingIndex
         CEG = CrazyEightsGame(startingPlayer=agentIndex,
                               numStartingCards=self.gameRules.numStartingCards,
@@ -28,9 +33,12 @@ class Game:
                               ranks=self.gameRules.ranks,
                               multiplicity=self.gameRules.multiplicity,
                               numPlayers=self.numAgents)
-        gameState = CEG.startState()
+        if startState == None:
+            gameState = CEG.startState()
+        else:
+            gameState = startState
 
-        #changed here, isEnd() as a function of gameState, not of CEG.
+        # changed here, isEnd() as a function of gameState, not of CEG.
         while not gameState.isEnd():
             agent = self.agents[agentIndex]
             if self.verbose:
@@ -39,10 +47,9 @@ class Game:
             action = agent.getAction(observation)
             gameState = gameState.getSuccessor(action)
             if self.verbose:
-                print('Agent %s performed action %s' % (agentIndex,action))
+                print('Agent %s performed action %s' % (agentIndex, action))
             agentIndex = (agentIndex + 1) % self.numAgents
         winner = (agentIndex - 1) % self.numAgents
         if self.verbose:
             print '\nGame over, agent %s won' % winner
         return winner
-

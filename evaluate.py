@@ -5,6 +5,7 @@ from keyboard_agent import KeyboardAgent
 from baseline_agent import BaselineAgent
 from oracle import OracleAgent
 from basic_minimax_agent import BasicMinimaxAgent
+from rl_agent import RLAgent
 
 
 def loadAgent(pacman):
@@ -76,12 +77,12 @@ def print_winnings(times_won, agents):
         totalWinnings)
     print 'Win Rate: %.2f %%' % winRate
 
-def runGames(numGames, agents, verbose):
+def runGames(numGames, agents, verbose, startState = None):
     instantiated_agents=[eval(a+'()') for a in agents]
     game = Game(agents=instantiated_agents, verbose=verbose>=3)
     times_won = [0 for i in range(len(agents))]
     for i in range(numGames):
-        winner = game.run()
+        winner = game.run(startState)
         times_won[winner] += 1
         if verbose >= 2:
             print_winnings(times_won,agents)
