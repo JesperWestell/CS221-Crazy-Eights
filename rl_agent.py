@@ -15,8 +15,7 @@ class RLAgent(Agent):
         self.depth = int(depth)
 
     def getAction(self, state):
-
-        def recurse(state, depth, agentIndex, alpha, beta):
+        def recurse(state, maxDepth, depth, agentIndex, alpha, beta):
             choices = []
             actions = state.getLegalActions()
             nextAgentIndex = (agentIndex + 1) % state.numPlayers
@@ -27,39 +26,35 @@ class RLAgent(Agent):
             # if is the other agent, tries to minimize
             if agentIndex == self.index:
                 for action in actions:
-                    choices.append(recurse(state.getSuccessor(action), depth, nextAgentIndex, alpha, beta))
+                    choices.append(recurse(state.getSuccessor(action),maxDepth, depth, nextAgentIndex, alpha, beta))
                     if alpha >= beta:
                         break
                     if min(choices) > alpha:
                         alpha = min(choices)
-                return max(choices)
+                if depth == maxDepth:
+                    return actions[choices.index(max(choices))]
+                else:
+                    return max(choices)
             elif agentIndex != state.numPlayers-1:
                 for action in actions:
-                    choices.append(recurse(state.getSuccessor(action), depth, nextAgentIndex, alpha, beta))
+                    choices.append(recurse(state.getSuccessor(action),maxDepth, depth, nextAgentIndex, alpha, beta))
                     if alpha >= beta:
                         break
                     if max(choices) < beta:
                         beta = max(choices)
                 return min(choices)
             else:
+                #print('Len actions: {0}'.format(len(actions)))
                 for action in actions:
-                    choices.append(recurse(state.getSuccessor(action), depth-1, nextAgentIndex, alpha, beta))
+                    choices.append(recurse(state.getSuccessor(action),maxDepth, depth-1, nextAgentIndex, alpha, beta))
                     if alpha >= beta:
                         break
                     if max(choices) < beta:
                         beta = max(choices)
                 return min(choices)
 
-
-        actions = state.getLegalActions()
-        values = [recurse(state.getSuccessor(action), self.depth, (self.index+1)%2,float('-inf'), float('+inf')) \
-                   for action in actions]
-        value = max(values)
-        #chose a random action from one of the bests.
-        bestIndices = [index for index in range(len(values)) if values[index] == value]
-        chosenIndex = random.choice(bestIndices)
-        best = actions[chosenIndex]
-        return best
+        action = recurse(state,self.depth,self.depth,self.index,float('-inf'), float('+inf'))
+        return action
 
     def getFeatures(self, currentState):
         numberOfObserverCards = currentState.getHandSize()
