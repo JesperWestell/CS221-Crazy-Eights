@@ -89,13 +89,24 @@ def mergeExamples(name1,name2,output):
     examples2 = loadExamples(name2)
     saveExamples(examples1+examples2,output)
 
+def create_exp_examples():
+    trainExamples = loadExamples('rl_examples.txt')
+    exp_examples = []
+    for e in trainExamples:
+        exp_examples.append((e[0],100*math.pow(1.2,e[1]-20)))
+        print exp_examples[-1][1]
+    saveExamples(exp_examples,'exp_examples.txt')
+
 def main():
     #createTrainingExamples(500)
-    GD('rl_examples.txt')
+    #GD('exp_examples.txt')
+    #create_exp_examples()
     #saveWeights([0.0 for i in range(5)])
     #mergeExamples('rl_examples.txt','rl_examples_new.txt','rl_examples.txt')
     #print len(loadExamples('rl_examples.txt'))
-    #print loadExamples('rl_examples.txt')
+    lst = loadExamples('rl_examples.txt')
+    for l in lst:
+        print(l)
     #saveWeights([-5.52586772e-01, 8.35091871e-01, 2.52975060e-02, 9.09851529e-03, 1.56949300e+01])
     #saveWeights([0.0 for i in range(5)])
 
