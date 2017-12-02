@@ -1,7 +1,7 @@
 import evaluate
 import timeit
 
-games = 5
+games = 1
 #agents = 'MinimaxAgent,BaselineAgent'
 #agents = 'MinimaxAgent,OracleAgent'
 #agents = 'BasicMinimaxAgent,OracleAgent,BaselineAgent'

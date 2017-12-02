@@ -42,7 +42,7 @@ class Game:
         while not gameState.isEnd():
             agent = self.agents[agentIndex]
             if self.verbose:
-                print '\nAgent %s\'s turn' % agentIndex
+                print ('\nAgent %s\'s turn' % agentIndex)
             observation = Observation(agentIndex, gameState=copy(gameState))
             action = agent.getAction(observation)
             gameState = gameState.getSuccessor(action)
@@ -51,5 +51,5 @@ class Game:
             agentIndex = (agentIndex + 1) % self.numAgents
         winner = (agentIndex - 1) % self.numAgents
         if self.verbose:
-            print '\nGame over, agent %s won' % winner
+            print('\nGame over, agent %s won' % winner)
         return winner
