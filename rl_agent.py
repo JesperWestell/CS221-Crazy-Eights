@@ -64,11 +64,17 @@ class RLAgent(Agent):
                                       in currentState.getHand().pile if
                                       card.rank == 8])
         numberOfDeckCards = currentState.getDeckSize()
+        numberOfSameRank = sum(1 for card in currentState.getHand().pile
+                               if card.rank == currentState.cardOnTable.rank)
+        numberOfSameSuit = sum(1 for card in currentState.getHand().pile
+                               if card.suit == currentState.cardOnTable.suit)
 
         return [numberOfObserverCards,
                 numberOfOpponentCards,
                 numberOfObserverEights,
                 numberOfDeckCards,
+                numberOfSameRank,
+                numberOfSameSuit,
                 1]
 
     def evaluate(self,features):

@@ -98,17 +98,16 @@ def create_exp_examples():
     saveExamples(exp_examples,'exp_examples.txt')
 
 def main():
-    #createTrainingExamples(500)
-    #GD('exp_examples.txt')
+    createTrainingExamples(500)
+    #GD('rl_examples_added_features.txt')
     #create_exp_examples()
     #saveWeights([0.0 for i in range(5)])
-    #mergeExamples('rl_examples.txt','rl_examples_new.txt','rl_examples.txt')
+    mergeExamples('rl_examples_added_features.txt','rl_examples_new.txt','rl_examples_added_features.txt')
     #print len(loadExamples('rl_examples.txt'))
-    lst = loadExamples('rl_examples.txt')
-    for l in lst:
-        print(l)
+    #lst = loadExamples('rl_examples.txt')
     #saveWeights([-5.52586772e-01, 8.35091871e-01, 2.52975060e-02, 9.09851529e-03, 1.56949300e+01])
     #saveWeights([0.0 for i in range(5)])
+
 
 if __name__ == '__main__':
     main()
