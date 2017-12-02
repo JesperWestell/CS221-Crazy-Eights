@@ -20,7 +20,7 @@ class Game:
         self.numAgents = len(agents)
         self.verbose = verbose
 
-    def run(self, startState=None):
+    def run(self, startState=None, isLogging = False):
         """
         :param startState: optional parameter for playing the game from
         a given state.
@@ -39,6 +39,7 @@ class Game:
             gameState = startState
 
         # changed here, isEnd() as a function of gameState, not of CEG.
+        log = []
         while not gameState.isEnd():
             agent = self.agents[agentIndex]
             if self.verbose:
@@ -46,10 +47,12 @@ class Game:
             observation = Observation(agentIndex, gameState=copy(gameState))
             action = agent.getAction(observation)
             gameState = gameState.getSuccessor(action)
+            if isLogging:
+                log.append((agentIndex,util.stateFeatureExtractor(observation),action))
             if self.verbose:
                 print('Agent %s performed action %s' % (agentIndex, action))
             agentIndex = (agentIndex + 1) % self.numAgents
         winner = (agentIndex - 1) % self.numAgents
         if self.verbose:
             print('\nGame over, agent %s won' % winner)
-        return winner
+        return winner,log

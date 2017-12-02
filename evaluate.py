@@ -6,6 +6,7 @@ from baseline_agent import BaselineAgent
 from oracle import OracleAgent
 from basic_minimax_agent import BasicMinimaxAgent
 from rl_agent import RLAgent
+from pruning_minimax_agent import PruningMinimaxAgent
 
 
 def loadAgent(pacman):
@@ -68,7 +69,6 @@ def readCommand(argv):
     return args
 
 def print_winnings(times_won, agents):
-    print
     totalWinnings = 0
     for i,a in enumerate(agents):
         print a + ' winnings: ' + str(times_won[i])
@@ -76,20 +76,25 @@ def print_winnings(times_won, agents):
     winRate = 100 * times_won[0] / float(
         totalWinnings)
     print 'Win Rate: %.2f %%' % winRate
+    print
 
-def runGames(numGames, agents, verbose, startState = None):
+def runGames(numGames, agents, verbose, startState = None,isLogging = False):
     instantiated_agents=[eval(a+'()') for a in agents]
-    game = Game(agents=instantiated_agents, verbose=verbose>=3)
+    game = Game(agents=instantiated_agents, verbose=verbose>=4)
     times_won = [0 for i in range(len(agents))]
+    logs = []
     for i in range(numGames):
-        winner = game.run(startState)
+        winner,log = game.run(startState,isLogging)
         times_won[winner] += 1
+        logs.append(log)
         if verbose >= 2:
+            print 'Game {0}'.format(i)
+        if verbose >= 3:
             print_winnings(times_won,agents)
     if verbose >= 1:
         print '\n-- Final Score --'
         print_winnings(times_won, agents)
-    return times_won
+    return times_won,logs
 
 
 def main():

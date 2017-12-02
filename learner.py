@@ -6,7 +6,9 @@ from game_rules import gameRules
 import random
 import math
 from util import saveWeights,loadWeights
+import util
 from sklearn import linear_model
+import collections
 
 from crazy_eights_game import Observation, GameState, CardPile
 
@@ -16,11 +18,40 @@ iterations = 10
 
 def loadExamples(name):
     with open(name,'rb') as f:
-        return pickle.load(f)
+        try:
+            return pickle.load(f)
+        except EOFError:
+            return []
 
 def saveExamples(examples,name):
     with open(name,'wb') as f:
         pickle.dump(examples,f)
+
+def learnTransitionProbs(N=5):
+    logs = evaluate.runGames(N, ['BasicMinimaxAgent', opponent], 2, isLogging=True)[1]
+    valuable_logs = []
+    # p(action|state) = p(action,state)/p(state)
+    actionAndStateProb = collections.Counter()
+    stateProb = collections.Counter()
+    for log in logs:
+        valuable_logs += [l[1:] for l in log if l[0] != 0]
+    numExamples = len(valuable_logs)
+    for l in valuable_logs:
+        features = l[0]
+        stateProb[tuple(features)] += 1./numExamples
+        actionAndStateProb[tuple(features+util.actionFeatureExtractor(l[1]))] \
+            +=1./numExamples
+
+    actionAndStateProbList = []
+    stateProbList = []
+
+    for f in actionAndStateProb:
+        actionAndStateProbList.append((f,actionAndStateProb[f]))
+    for f in stateProb:
+        stateProbList.append((f, stateProb[f]))
+
+    saveExamples(actionAndStateProbList,'action_and_state_prob_new.txt')
+    saveExamples(stateProbList,'state_prob_new.txt')
 
 def generateRandomState():
     state = GameState(0,
@@ -61,7 +92,7 @@ def getExamples(n):
     for _ in range(n):
         print _+1
         state = generateRandomState()
-        value = evaluate.runGames(numGames,['BasicMinimaxAgent',opponent],0,state)[0]
+        value = evaluate.runGames(numGames,['BasicMinimaxAgent',opponent],0,state)[0][0]
         examples.append((agent.getFeatures(Observation(0,state)),value))
     return examples
 
@@ -69,7 +100,7 @@ def createTrainingExamples(n):
     examples = getExamples(n)
     saveExamples(examples, 'rl_examples_new.txt')
 
-def GD(name):
+def GD(name,weights_file):
     trainExamples = loadExamples(name)
     X = []
     Y = []
@@ -81,8 +112,9 @@ def GD(name):
 
     model = linear_model.LinearRegression(fit_intercept=False)
     model.fit(X, Y)
-    print(model.coef_)
-    saveWeights(list(model.coef_))
+    weights = list(model.coef_)
+    print(weights)
+    saveWeights(weights,weights_file)
 
 def mergeExamples(name1,name2,output):
     examples1 = loadExamples(name1)
@@ -98,11 +130,23 @@ def create_exp_examples():
     saveExamples(exp_examples,'exp_examples.txt')
 
 def main():
-    createTrainingExamples(500)
-    #GD('rl_examples_added_features.txt')
+
+    #learnTransitionProbs(50000)
+    #mergeExamples('action_and_state_prob.txt',
+    #              'action_and_state_prob_new.txt',
+    #              'action_and_state_prob.txt')
+    #mergeExamples('state_prob.txt',
+    #              'state_prob_new.txt',
+    #              'state_prob.txt')
+    #GD('action_and_state_prob.txt','action_and_state_weights.txt')
+    #GD('state_prob.txt', 'state_weights.txt')
+    #print(loadExamples('rl_examples.txt'))
+    #createTrainingExamples(1000)
+    #print(loadExamples('rl_examples_new.txt'))
+    #GD('rl_examples.txt','rl_weights.txt')
     #create_exp_examples()
     #saveWeights([0.0 for i in range(5)])
-    mergeExamples('rl_examples_added_features.txt','rl_examples_new.txt','rl_examples_added_features.txt')
+    #mergeExamples('rl_examples.txt','rl_examples_new.txt','rl_examples.txt')
     #print len(loadExamples('rl_examples.txt'))
     #lst = loadExamples('rl_examples.txt')
     #saveWeights([-5.52586772e-01, 8.35091871e-01, 2.52975060e-02, 9.09851529e-03, 1.56949300e+01])

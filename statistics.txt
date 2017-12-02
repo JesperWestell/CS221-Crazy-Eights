@@ -1,0 +1,6 @@
+# BasicMinimax depth 1 vs. Oracle: 52% winnings , 0.43 sec/game
+# BasicMinimax depth 2 vs. Oracle: 54% winnings , 13.36 sec/game
+# RL depth 1 vs. Oracle: 53% winnings , 0.62 sec/game
+# RL depth 2 vs. Oracle: 36% winnings , 25.24 sec/game
+# Pruning depth 1 vs. Oracle: 53% winnings , 0.64 sec/game
+# Pruning depth 2 vs. Oracle: 49% winnings , 8.00 sec/game

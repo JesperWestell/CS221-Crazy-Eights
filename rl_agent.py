@@ -44,7 +44,6 @@ class RLAgent(Agent):
                         beta = max(choices)
                 return min(choices)
             else:
-                #print('Len actions: {0}'.format(len(actions)))
                 for action in actions:
                     choices.append(recurse(state.getSuccessor(action),maxDepth, depth-1, nextAgentIndex, alpha, beta))
                     if alpha >= beta:
@@ -56,34 +55,9 @@ class RLAgent(Agent):
         action = recurse(state,self.depth,self.depth,self.index,float('-inf'), float('+inf'))
         return action
 
-    def getFeatures(self, currentState):
-        numberOfObserverCards = currentState.getHandSize()
-        numberOfOpponentCards = sum(currentState.handsizes) - \
-                                currentState.getHandSize()
-        numberOfObserverEights = sum([currentState.getHand().look(card) for card
-                                      in currentState.getHand().pile if
-                                      card.rank == 8])
-        numberOfDeckCards = currentState.getDeckSize()
-        numberOfSameRank = sum(1 for card in currentState.getHand().pile
-                               if card.rank == currentState.cardOnTable.rank)
-        numberOfSameSuit = sum(1 for card in currentState.getHand().pile
-                               if card.suit == currentState.cardOnTable.suit)
-
-        return [numberOfObserverCards,
-                numberOfOpponentCards,
-                numberOfObserverEights,
-                numberOfDeckCards,
-                numberOfSameRank,
-                numberOfSameSuit,
-                1]
-
-    def evaluate(self,features):
-        weights = util.loadWeights()
-        return sum([w*f for w,f in zip(weights,features)])
-
     def evaluationFunction(self, currentState):
-        features = self.getFeatures(currentState)
-        optimalScore = self.evaluate(features)
+        features = util.stateFeatureExtractor(currentState)
+        optimalScore = util.dot(util.loadWeights('rl_weights.txt'),features)
         return optimalScore
 
 
