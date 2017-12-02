@@ -1,13 +1,13 @@
 import evaluate
 import timeit
 
-games = 5
+games = 1
 #agents = 'MinimaxAgent,BaselineAgent'
 #agents = 'MinimaxAgent,OracleAgent'
 #agents = 'BasicMinimaxAgent,OracleAgent,BaselineAgent'
 #agents = 'MinimaxAgent,MinimaxAgent,BaselineAgent'
 #agents = 'RLAgent,BasicMinimaxAgent,BaselineAgent'
-agents = 'RLAgent,OracleAgent'
+agents = 'RLAgent,KeyboardAgent'
 verbose = 2
 fixseed = 'False'
 params = '-n %s -a %s -v %s -f %s' % (games,agents,verbose,fixseed)

@@ -15,9 +15,10 @@ class KeyboardAgent(Agent):
         print('Card on table: %s' % state.getCardOnTable())
         print('Cards in hand: %s' % ['%s : %s' % (card, state.getHand().pile[card]) for
                                    card in state.getHand().pile])
+        print('Number of cards in opponents hand: %s' % state.handsizes[(self.index+1)%2])
         while True:
-            print 'legal actions: %s ' % ['%s' % a + (' ' + ' '.join([ '%s %s' % (card.rank, card.suit) for card in cards])
-                                                       if cards != None else '') for a,cards in state.getLegalActions(self.index)]
+            print('legal actions: %s ' % ['%s' % a + (' ' + ' '.join([ '%s %s' % (card.rank, card.suit) for card in cards])
+                                                       if cards != None else '') for a,cards in state.getLegalActions()])
             x = raw_input('Make action: ').split()
             inputAction = x[0]
             inputCards = x[1:]

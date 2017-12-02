@@ -280,7 +280,7 @@ def getLegalActions(cardOnTable, hand, numsTaken, deckSize):
                     allCombinations = util.getCombinations(cardsWithSameRank)
                     for c in allCombinations:
                         actions.append((Actions.PLAY, [card] + c))
-        return actions
+    return actions
 
 class CrazyEightsGame:
     def __init__(self, numStartingCards = 6,
