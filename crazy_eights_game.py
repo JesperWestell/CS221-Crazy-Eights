@@ -201,6 +201,9 @@ class Observation:
     def getHand(self):
         return self.hand
 
+    def getUnknowns(self):
+        return self.unknowns
+
     def getCardOnTable(self):
         return self.cardOnTable
 
