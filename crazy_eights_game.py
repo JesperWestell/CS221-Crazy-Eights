@@ -1,14 +1,8 @@
 import random, collections
 import game_rules
-from game_rules import Suit
+from game_rules import Suit,Actions
 import util
 import copy
-
-class Actions:
-    PASS = 'pass'
-    TAKE = 'take'
-    PLAY = 'play'
-    AllActions = [PASS,TAKE,PLAY]
 
 class Card:
     def __init__(self, rank, suit):
@@ -264,22 +258,21 @@ class Observation:
 
 def getLegalActions(cardOnTable, hand, numsTaken, deckSize):
     actions = []
-    if numsTaken == 3 and deckSize > 0:
+    if numsTaken < 3 and deckSize > 0:
+        actions.append((Actions.TAKE, None))
+    for card in hand.pile.keys():
+        if cardOnTable.suit == card.suit or \
+                        cardOnTable.rank == card.rank or \
+                        card.rank == 8:
+            actions.append((Actions.PLAY, [card]))
+            if game_rules.CHAIN_RULE:
+                cardsWithSameRank = [c for c in hand.pile.keys()
+                                 if c.rank == card.rank and c != card]
+                allCombinations = util.getCombinations(cardsWithSameRank)
+                for c in allCombinations:
+                    actions.append((Actions.PLAY, [card] + c))
+    if len(actions) == 0:
         actions.append((Actions.PASS, None))
-    else:
-        if numsTaken < 3 and deckSize > 0:
-            actions.append((Actions.TAKE, None))
-        for card in hand.pile.keys():
-            if cardOnTable.suit == card.suit or \
-                            cardOnTable.rank == card.rank or \
-                            card.rank == 8:
-                actions.append((Actions.PLAY, [card]))
-                if game_rules.CHAIN_RULE:
-                    cardsWithSameRank = [c for c in hand.pile.keys()
-                                     if c.rank == card.rank and c != card]
-                    allCombinations = util.getCombinations(cardsWithSameRank)
-                    for c in allCombinations:
-                        actions.append((Actions.PLAY, [card] + c))
     return actions
 
 class CrazyEightsGame:

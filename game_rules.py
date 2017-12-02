@@ -1,12 +1,17 @@
 
 CHAIN_RULE = False
 
+class Actions:
+    PASS = 'pass'
+    TAKE = 'take'
+    PLAY = 'play'
+    AllActions = [PASS,TAKE,PLAY]
+
 class Suit:
     SPADE = 'spade'
     HEART = 'heart'
     CLUB = 'club'
     DIAMOND = 'diamond'
-
 
 class ClassicGameRules:
     suits = [Suit.HEART,Suit.DIAMOND,Suit.CLUB,Suit.SPADE]

@@ -1,6 +1,6 @@
 from agent import Agent
-from crazy_eights_game import Actions, Card
-from game_rules import gameRules
+from crazy_eights_game import Card
+from game_rules import gameRules,Actions
 
 class KeyboardAgent(Agent):
     """
