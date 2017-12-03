@@ -2,7 +2,7 @@ from itertools import combinations, chain
 import sys
 import inspect
 import pickle
-from game_rules import Suit, Actions
+from game_rules import Suit, Actions, ClassicGameRules
 
 def getCombinations(lst):
     combs = []
@@ -60,7 +60,37 @@ def stateFeatureExtractor(state):
             numberOfSameSuit,
             1]
 
-
 def dot(weights, features):
     assert len(features) == len(weights)
     return sum([w * f for w, f in zip(weights, features)])
+
+
+def getdrawProbabilities(self, state):
+    suits = ClassicGameRules.suits
+    ranks = ClassicGameRules.ranks
+    drawProbSuits = {key: 0 for key in suits}
+    drawProbRanks = {key: 0 for key in ranks}
+    # Count remaining cards in unknowns and return probabilities of each card d
+    print(
+    'Cards in RLhand: %s' % ['%s : %s' % (card, state.getHand().pile[card]) for
+                             card in state.getHand().pile])
+
+    print(
+    'Cards in deck: %s' % ['%s : %s' % (card, state.getUnknowns().pile[card])
+                           for
+                           card in state.getUnknowns().pile])
+    suits = [card.suit for card in state.getUnknowns().pile]
+    ranks = [card.rank for card in state.getUnknowns().pile]
+
+    for suit in suits:
+        drawProbSuits[suit] += 1
+
+    for rank in ranks:
+        drawProbRanks[rank] += 1
+
+    unknowns_base = float(len(suits))
+
+    drawProbSuits = {k: v / unknowns_base for k, v in drawProbSuits.iteritems()}
+    drawProbRanks = {k: v / unknowns_base for k, v in drawProbRanks.iteritems()}
+
+    return drawProbSuits, drawProbRanks

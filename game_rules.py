@@ -14,7 +14,7 @@ class Suit:
     DIAMOND = 'diamond'
 
 class ClassicGameRules:
-    suits = [Suit.HEART,Suit.DIAMOND,Suit.CLUB,Suit.SPADE]
+    suits = [Suit.DIAMOND,Suit.HEART,Suit.SPADE,Suit.CLUB]
     ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13]
     numStartingCards = 7
     multiplicity = 1
