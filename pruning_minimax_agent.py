@@ -6,11 +6,9 @@ class PruningMinimaxAgent(Agent):
     """
     A pruning minimax agent.
     """
-    # 46% with depth 1 actions 5
-    # 44% with depth 2 actions 5
-    def __init__(self, index=0, depth = 2):
+    def __init__(self, index=0, depth = 1):
         self.index = index
-        self.numActionsToPick = 5
+        self.numActionsToPick = 3
         self.keys = []
 
         #added a depth and a evaluation function.
