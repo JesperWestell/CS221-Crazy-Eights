@@ -6,11 +6,9 @@ class PruningMinimaxAgent(Agent):
     """
     A pruning minimax agent.
     """
-    # 46% with depth 1 actions 5
-    # 44% with depth 2 actions 5
-    def __init__(self, index=0, depth = 2):
+    def __init__(self, index=0, depth = 1):
         self.index = index
-        self.numActionsToPick = 5
+        self.numActionsToPick = 3
         self.keys = []
 
         #added a depth and a evaluation function.
@@ -65,25 +63,11 @@ class PruningMinimaxAgent(Agent):
         best = actions[chosenIndex]
         return best
 
-    def getTransprob(self,state,action):
-        state_weights = \
-            util.loadWeights('state_weights.txt')
-        action_and_state_weights = \
-            util.loadWeights('action_and_state_weights.txt')
-        state_features = util.stateFeatureExtractor(state)
-        action_features = util.actionFeatureExtractor(action)
-
-        state_prob = util.dot(state_weights,state_features)
-        action_and_state_prob = util.dot(action_and_state_weights,
-                                         state_features+action_features)
-        action_given_state_prob = action_and_state_prob / state_prob
-        return action_given_state_prob
-
     def maximizeProbActions(self,state,N):
         actions = state.getLegalActions()
         actionProbs = []
         for a in actions:
-            actionProbs.append(self.getTransprob(state,a))
+            actionProbs.append(util.getLearnedTransProbabilities(state,a))
         prioList=[x for _, x in sorted(zip(actionProbs, actions),
                                            key=lambda pair: -pair[0])]
         return prioList[:N]

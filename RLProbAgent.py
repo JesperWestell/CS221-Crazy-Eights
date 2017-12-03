@@ -6,46 +6,18 @@ class RLProbAgent(Agent):
     """
     An RLProb agent.
     """
-
-    def __init__(self, index=0, depth = 1):
+    def __init__(self, index=0, depth = 2):
         self.index = index
+        self.numActionsToPick = 3
         self.keys = []
 
         #added a depth and a evaluation function.
         self.depth = int(depth)
 
-    def getdrawProbabilties(self, state):
-        suits = ['diamond','heart', 'spade', 'club']
-        ranks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-        drawProbSuits = {key: 0 for key in suits}
-        drawProbRanks = {key: 0 for key in ranks}
-        # Count remaining cards in unknowns and return probabilities of each card d
-        print('Cards in RLhand: %s' % ['%s : %s' % (card, state.getHand().pile[card]) for
-                                   card in state.getHand().pile])
-
-        print('Cards in deck: %s' % ['%s : %s' % (card, state.getUnknowns().pile[card]) for
-                                   card in state.getUnknowns().pile])
-        suits = [card.suit for card in state.getUnknowns().pile]
-        ranks = [card.rank for card in state.getUnknowns().pile]
-
-        for suit in suits:
-            drawProbSuits[suit] += 1
-
-        for rank in ranks:
-            drawProbRanks[rank] += 1
-
-        unknowns_base = float(len(suits))
-
-        drawProbSuits = {k: v / unknowns_base for k, v in drawProbSuits.iteritems()}
-        drawProbRanks = {k: v / unknowns_base for k, v in drawProbRanks.iteritems()}
-
-        return drawProbSuits, drawProbRanks
-
     def getAction(self, state):
-        # cards = self.getdrawProbabilties(state)
-        def recurse(state, maxDepth, depth, agentIndex, alpha, beta):
+        def recurse(state, depth, agentIndex, alpha, beta):
+            assert state.player == agentIndex
             choices = []
-            actions = state.getLegalActions()
             nextAgentIndex = (agentIndex + 1) % state.numPlayers
             if state.isEnd():
                 return state.Utility()
@@ -53,59 +25,68 @@ class RLProbAgent(Agent):
                 return self.evaluationFunction(state)
             # if is the other agent, tries to minimize
             if agentIndex == self.index:
+                actions = state.getLegalActions()
                 for action in actions:
-                    choices.append(recurse(state.getSuccessor(action),maxDepth, depth, nextAgentIndex, alpha, beta))
+                    choices.append(recurse(state.getSuccessor(action), depth, nextAgentIndex, alpha, beta))
                     if alpha >= beta:
                         break
                     if min(choices) > alpha:
                         alpha = min(choices)
-                if depth == maxDepth:
-                    return actions[choices.index(max(choices))]
-                else:
-                    return max(choices)
+                return max(choices)
             elif agentIndex != state.numPlayers-1:
+                actions = self.maximizeProbActions(state, self.numActionsToPick)
                 for action in actions:
-                    choices.append(recurse(state.getSuccessor(action),maxDepth, depth, nextAgentIndex, alpha, beta))
+                    choices.append(recurse(state.getSuccessor(action), depth, nextAgentIndex, alpha, beta))
                     if alpha >= beta:
                         break
                     if max(choices) < beta:
                         beta = max(choices)
                 return min(choices)
             else:
-                #print('Len actions: {0}'.format(len(actions)))
+                actions = self.maximizeProbActions(state, self.numActionsToPick)
                 for action in actions:
-                    choices.append(recurse(state.getSuccessor(action),maxDepth, depth-1, nextAgentIndex, alpha, beta))
+                    choices.append(recurse(state.getSuccessor(action), depth-1, nextAgentIndex, alpha, beta))
                     if alpha >= beta:
                         break
                     if max(choices) < beta:
                         beta = max(choices)
                 return min(choices)
 
-        action = recurse(state,self.depth,self.depth,self.index,float('-inf'), float('+inf'))
-        return action
 
-    def getFeatures(self, currentState):
-        numberOfObserverCards = currentState.getHandSize()
-        numberOfOpponentCards = sum(currentState.handsizes) - \
-                                currentState.getHandSize()
-        numberOfObserverEights = sum([currentState.getHand().look(card) for card
-                                      in currentState.getHand().pile if
-                                      card.rank == 8])
-        numberOfDeckCards = currentState.getDeckSize()
+        actions = state.getLegalActions()
+        values = [recurse(state.getSuccessor(action), self.depth, (self.index+1)%2,float('-inf'), float('+inf')) \
+                   for action in actions]
+        value = max(values)
+        #chose a random action from one of the bests.
+        bestIndices = [index for index in range(len(values)) if values[index] == value]
+        chosenIndex = random.choice(bestIndices)
+        best = actions[chosenIndex]
+        return best
 
-        return [numberOfObserverCards,
-                numberOfOpponentCards,
-                numberOfObserverEights,
-                numberOfDeckCards,
-                1]
+    def getDrawProbability(self,state,action,drawProbSuits,drawProbRanks):
+        if action[1] == None:
+            return util.getLearnedTransProbabilities(state, action)
+        else:
+            card = action[1][0]
+            return drawProbRanks[card.rank] * drawProbSuits[card.suit]
 
-    def evaluate(self,features):
-        weights = util.loadWeights()
-        return sum([w*f for w,f in zip(weights,features)])
+    def maximizeProbActions(self,state,N):
+        actions = state.getLegalActions()
+        drawProbSuits, drawProbRanks = util.getdrawProbabilities(state)
+        actionProbs = []
+        for a in actions:
+            actionProbs.append(self.getDrawProbability(state,a,drawProbSuits,drawProbRanks))
+        prioList=[x for _, x in sorted(zip(actionProbs, actions),
+                                           key=lambda pair: -pair[0])]
+        return prioList[:N]
+
 
     def evaluationFunction(self, currentState):
-        features = self.getFeatures(currentState)
-        optimalScore = self.evaluate(features)
+
+        numberOfCards = currentState.getHandSize()
+
+        optimalScore = -numberOfCards
+
         return optimalScore
 
 
