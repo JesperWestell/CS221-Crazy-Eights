@@ -25,4 +25,11 @@ class TinyGameRules:
     numStartingCards = 2
     multiplicity = 1
 
-gameRules = ClassicGameRules
+class VeryTinyGameRules:
+    suits = [Suit.HEART,Suit.DIAMOND]
+    ranks = [1,2]
+    numStartingCards = 2
+    multiplicity = 1
+
+gameRules = VeryTinyGameRules
+
