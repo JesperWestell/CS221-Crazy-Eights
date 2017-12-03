@@ -2,15 +2,11 @@ import evaluate
 import timeit
 
 games = 100
-#agents = 'MinimaxAgent,BaselineAgent'
-#agents = 'BasicMinimaxAgent,OracleAgent'
-#agents = 'BasicMinimaxAgent,OracleAgent,BaselineAgent'
-#agents = 'MinimaxAgent,MinimaxAgent,BaselineAgent'
-#agents = 'RLAgent,BasicMinimaxAgent,BaselineAgent'
 #agents = 'BasicMinimaxAgent,OracleAgent'
 #agents = 'PruningMinimaxAgent,OracleAgent'
+agents = 'RLProbAgent,OracleAgent'
 #agents = 'OracleAgent,BasicMinimaxAgent'
-agents = 'RLAgent,OracleAgent'
+#agents = 'RLAgent,OracleAgent'
 #agents = 'BaselineAgent,OracleAgent'
 verbose = 3
 fixseed = 'False'

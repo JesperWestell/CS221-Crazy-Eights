@@ -65,20 +65,20 @@ def dot(weights, features):
     return sum([w * f for w, f in zip(weights, features)])
 
 
-def getdrawProbabilities(self, state):
+def getdrawProbabilities(state):
     suits = ClassicGameRules.suits
     ranks = ClassicGameRules.ranks
     drawProbSuits = {key: 0 for key in suits}
     drawProbRanks = {key: 0 for key in ranks}
     # Count remaining cards in unknowns and return probabilities of each card d
-    print(
-    'Cards in RLhand: %s' % ['%s : %s' % (card, state.getHand().pile[card]) for
-                             card in state.getHand().pile])
+    #print(
+    #'Cards in RLhand: %s' % ['%s : %s' % (card, state.getHand().pile[card]) for
+    #                         card in state.getHand().pile])
 
-    print(
-    'Cards in deck: %s' % ['%s : %s' % (card, state.getUnknowns().pile[card])
-                           for
-                           card in state.getUnknowns().pile])
+    #print(
+    #'Cards in deck: %s' % ['%s : %s' % (card, state.getUnknowns().pile[card])
+    #                       for
+    #                       card in state.getUnknowns().pile])
     suits = [card.suit for card in state.getUnknowns().pile]
     ranks = [card.rank for card in state.getUnknowns().pile]
 
@@ -94,3 +94,18 @@ def getdrawProbabilities(self, state):
     drawProbRanks = {k: v / unknowns_base for k, v in drawProbRanks.iteritems()}
 
     return drawProbSuits, drawProbRanks
+
+
+def getLearnedTransProbabilities(state, action):
+    state_weights = \
+        loadWeights('state_weights.txt')
+    action_and_state_weights = \
+        loadWeights('action_and_state_weights.txt')
+    state_features = stateFeatureExtractor(state)
+    action_features = actionFeatureExtractor(action)
+
+    state_prob = dot(state_weights, state_features)
+    action_and_state_prob = dot(action_and_state_weights,
+                                     state_features + action_features)
+    action_given_state_prob = action_and_state_prob / state_prob
+    return action_given_state_prob

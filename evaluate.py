@@ -7,6 +7,7 @@ from oracle import OracleAgent
 from basic_minimax_agent import BasicMinimaxAgent
 from rl_agent import RLAgent
 from pruning_minimax_agent import PruningMinimaxAgent
+from RLProbAgent import RLProbAgent
 
 
 def loadAgent(pacman):
@@ -88,7 +89,7 @@ def runGames(numGames, agents, verbose, startState = None,isLogging = False):
         times_won[winner] += 1
         logs.append(log)
         if verbose >= 2:
-            print 'Game {0}'.format(i)
+            print 'Game {0}'.format(i+1)
         if verbose >= 3:
             print_winnings(times_won,agents)
     if verbose >= 1:
