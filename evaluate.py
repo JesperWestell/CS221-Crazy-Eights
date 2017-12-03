@@ -8,6 +8,7 @@ from basic_minimax_agent import BasicMinimaxAgent
 from rl_agent import RLAgent
 from pruning_minimax_agent import PruningMinimaxAgent
 from RLProbAgent import RLProbAgent
+from rl_pruning_agent import RLPruningAgent
 
 
 def loadAgent(pacman):
@@ -96,7 +97,6 @@ def runGames(numGames, agents, verbose, startState = None,isLogging = False):
         print '\n-- Final Score --'
         print_winnings(times_won, agents)
     return times_won,logs
-
 
 def main():
     """

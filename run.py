@@ -5,6 +5,7 @@ games = 100
 #agents = 'BasicMinimaxAgent,OracleAgent'
 #agents = 'PruningMinimaxAgent,OracleAgent'
 agents = 'RLProbAgent,OracleAgent'
+agents = 'RLPruningAgent,OracleAgent'
 #agents = 'OracleAgent,BasicMinimaxAgent'
 #agents = 'RLAgent,OracleAgent'
 #agents = 'BaselineAgent,OracleAgent'
