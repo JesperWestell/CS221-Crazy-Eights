@@ -12,6 +12,13 @@ class Suit:
     HEART = 'heart'
     CLUB = 'club'
     DIAMOND = 'diamond'
+    all = [SPADE,HEART,CLUB,DIAMOND]
+
+class BigGameRules:
+    suits = [Suit.DIAMOND,Suit.HEART,Suit.SPADE,Suit.CLUB]
+    ranks = [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    numStartingCards = 20
+    multiplicity = 10
 
 class ClassicGameRules:
     suits = [Suit.DIAMOND,Suit.HEART,Suit.SPADE,Suit.CLUB]
@@ -27,9 +34,9 @@ class TinyGameRules:
 
 class VeryTinyGameRules:
     suits = [Suit.HEART,Suit.DIAMOND]
-    ranks = [1,2]
-    numStartingCards = 2
+    ranks = [1]
+    numStartingCards = 1
     multiplicity = 1
 
-gameRules = VeryTinyGameRules
+gameRules = ClassicGameRules
 

@@ -11,7 +11,7 @@ import util
 
 class Game:
     def __init__(self,
-                 gameRules=game_rules.ClassicGameRules,
+                 gameRules=game_rules.gameRules,
                  agents=[OracleAgent(index=0), BaselineAgent(index=1)],
                  verbose=True):
         self.gameRules = gameRules
@@ -55,4 +55,4 @@ class Game:
         winner = (agentIndex - 1) % self.numAgents
         if self.verbose:
             print('\nGame over, agent %s won' % winner)
-        return winner,log
+        return winner, log

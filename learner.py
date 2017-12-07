@@ -27,6 +27,10 @@ def saveExamples(examples,name):
     with open(name,'wb') as f:
         pickle.dump(examples,f)
 
+def rescale(x):
+    if x==0: return 0
+    return 100/(1+np.exp(-(2*x-1)*8))
+
 def learnTransitionProbs(N=5):
     logs = evaluate.runGames(N, ['BasicMinimaxAgent', opponent], 2, isLogging=True)[1]
     valuable_logs = []
@@ -91,7 +95,7 @@ def getExamples(n):
     for _ in range(n):
         print _+1
         state = generateRandomState()
-        value = evaluate.runGames(numGames,['RLAgent',opponent],0,state)[0][0]
+        value = evaluate.runGames(numGames,['BasicMinimaxAgent',opponent],0,state)[0][0]
         examples.append((util.stateFeatureExtractor(Observation(0,state)),value))
     return examples
 
@@ -119,23 +123,18 @@ def mergeExamples(name1,name2,output):
     examples1 = loadExamples(name1)
     examples2 = loadExamples(name2)
     saveExamples(examples1+examples2,output)
+    create_exp_examples()
 
 def create_exp_examples():
-    trainExamples = loadExamples('rl_examples2.txt')
+    trainExamples = loadExamples('rl_examples.txt')
     exp_examples = []
     mean = 0
     for e in trainExamples:
         mean += e[1]
     mean /= float(len(trainExamples))
-    print('mean = {0}'.format(mean))
     for e in trainExamples:
-        base = 1.4
-        zero_mean_val = e[1] - mean
         #exp_examples.append((e[0],100*math.pow(1.3,e[1]-20)))
-        if zero_mean_val < 0:
-            exp_examples.append((e[0], -100 * math.pow(base, -zero_mean_val - mean)))
-        else:
-            exp_examples.append((e[0],100 * math.pow(base, zero_mean_val-(20-mean))))
+        exp_examples.append((e[0],rescale(e[1]/float(numGames))))
     saveExamples(exp_examples,'exp_examples.txt')
 
 
@@ -149,12 +148,16 @@ def main():
     #              'state_prob.txt')
     #GD('action_and_state_prob.txt','action_and_state_weights.txt')
     #GD('state_prob.txt', 'state_weights.txt')
-    #print(loadExamples('rl_examples.txt'))
-    #createTrainingExamples(990)
-    create_exp_examples()
-    GD('exp_examples.txt','rl_weights.txt')
+
+    #createTrainingExamples(485)
+    #mergeExamples('rl_examples.txt','rl_examples_new.txt','rl_examples.txt')
+    #print(len(loadExamples('rl_examples.txt')))
+
     #create_exp_examples()
-    #mergeExamples('rl_examples2.txt','rl_examples_new.txt','rl_examples2.txt')
+    # use exp_examples.txt!!
+
+    GD('exp_examples.txt', 'rl_weights.txt')
+
     #print(len(loadExamples('rl_examples2.txt')))
     #print len(loadExamples('rl_examples.txt'))
     #lst = loadExamples('rl_examples.txt')

@@ -9,7 +9,7 @@ class RLPruningAgent(Agent):
 
     def __init__(self, index=0, depth = 1):
         self.index = index
-        self.numActionsToPick = 3
+        self.numActionsToPick = 5
         self.keys = []
 
         #added a depth and a evaluation function.

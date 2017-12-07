@@ -11,5 +11,7 @@ class BaselineAgent(Agent):
         self.keys = []
 
     def getAction(self, state):
-        actions =  state.getLegalActions()
+        actions = state.getLegalActions()
+        if len(actions) > 1:
+            actions = [a for a in actions if a != ('take', None)]
         return random.choice(actions)

@@ -4,10 +4,11 @@ import timeit
 games = 100
 #agents = 'BasicMinimaxAgent,OracleAgent'
 #agents = 'PruningMinimaxAgent,OracleAgent'
-agents = 'RLProbAgent,OracleAgent'
-agents = 'RLPruningAgent,OracleAgent'
+#agents = 'RLProbAgent,OracleAgent'
+#agents = 'RLPruningAgent,OracleAgent'
 #agents = 'OracleAgent,BasicMinimaxAgent'
-#agents = 'RLAgent,OracleAgent'
+agents = 'RLAgent,OracleAgent'
+#agents = 'RLAgent,BaselineAgent'
 #agents = 'BaselineAgent,OracleAgent'
 verbose = 3
 fixseed = 'False'

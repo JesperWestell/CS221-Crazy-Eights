@@ -51,6 +51,13 @@ def stateFeatureExtractor(state):
                            if card.rank == state.cardOnTable.rank)
     numberOfSameSuit = sum(1 for card in state.getHand().pile
                            if card.suit == state.cardOnTable.suit)
+    card_features = []
+    for suit in Suit.all:
+        for rank in range(1,13+1):
+            card_features.append(
+                sum(state.unknowns.look(card) for card in state.unknowns.pile
+                    if card.suit == suit and card.rank == rank))
+
 
     return [numberOfObserverCards,
             numberOfOpponentCards,
@@ -58,7 +65,7 @@ def stateFeatureExtractor(state):
             numberOfDeckCards,
             numberOfSameRank,
             numberOfSameSuit,
-            1]
+            1] + card_features
 
 def dot(weights, features):
     assert len(features) == len(weights)
