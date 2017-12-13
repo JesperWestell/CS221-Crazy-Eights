@@ -2,13 +2,14 @@ from agent import Agent
 import random
 import util
 
-class PruningMinimaxAgent(Agent):
+class PruningAgent(Agent):
     """
-    A pruning minimax agent.
+    A mix of RL and pruning agent.
     """
+
     def __init__(self, index=0, depth = 1):
         self.index = index
-        self.numActionsToPick = 3
+        self.numActionsToPick = 5
         self.keys = []
 
         #added a depth and a evaluation function.
@@ -72,13 +73,9 @@ class PruningMinimaxAgent(Agent):
                                            key=lambda pair: -pair[0])]
         return prioList[:N]
 
-
     def evaluationFunction(self, currentState):
-
-        numberOfCards = currentState.getHandSize()
-
-        optimalScore = -numberOfCards
-
+        features = util.stateFeatureExtractor(currentState)
+        optimalScore = util.dot(util.loadWeights('rl_weights.txt'),features)
         return optimalScore
 
 

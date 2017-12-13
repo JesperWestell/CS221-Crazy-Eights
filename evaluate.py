@@ -6,9 +6,8 @@ from baseline_agent import BaselineAgent
 from oracle import OracleAgent
 from basic_minimax_agent import BasicMinimaxAgent
 from rl_agent import RLAgent
-from pruning_minimax_agent import PruningMinimaxAgent
 from RLProbAgent import RLProbAgent
-from rl_pruning_agent import RLPruningAgent
+from pruning_agent import PruningAgent
 
 
 def loadAgent(pacman):
