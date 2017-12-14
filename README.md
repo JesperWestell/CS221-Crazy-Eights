@@ -3,10 +3,11 @@ CS221 Course Project on developing a Crazy Eights playing AI
 
 #evaluate.py
 Contains code capable of running multiple games, and evaluate the results. Can
-be called from the terminal, or run from run.py.
+be called from the terminal, or run from run.py, if you don't want to add
+arguments to the call.
 
 #run.py
-Script used to call on evaluate.py without using the terminal
+Script used to call on evaluate.py with predefined arguments.
 
 #crazy_eights_game.py
 Contains the classes CrazyEightsGame, GameState, Observer, together with code
@@ -55,7 +56,7 @@ Similar to learner.py this file contains the functions to learn the Q-values
 for the Q-learning agent.
 
 #util.py
-Contains helper functions used by many of the agents
+Contains helper functions used by many of the agents.
 
 #rl_weights.txt
 Contains the weights used by the evaluation function used by RLAgent. Readable
