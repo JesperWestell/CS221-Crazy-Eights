@@ -6,7 +6,6 @@ from baseline_agent import BaselineAgent
 from oracle import OracleAgent
 from basic_minimax_agent import BasicMinimaxAgent
 from rl_agent import RLAgent
-from RLProbAgent import RLProbAgent
 from pruning_agent import PruningAgent
 
 
