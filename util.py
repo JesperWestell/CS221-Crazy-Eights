@@ -65,7 +65,7 @@ def stateFeatureExtractor(state):
             numberOfDeckCards,
             numberOfSameRank,
             numberOfSameSuit,
-            1] + card_features
+            1]
 
 def dot(weights, features):
     assert len(features) == len(weights)
@@ -110,7 +110,6 @@ def getLearnedTransProbabilities(state, action):
         loadWeights('action_and_state_weights.txt')
     state_features = stateFeatureExtractor(state)
     action_features = actionFeatureExtractor(action)
-
     state_prob = dot(state_weights, state_features)
     action_and_state_prob = dot(action_and_state_weights,
                                      state_features + action_features)

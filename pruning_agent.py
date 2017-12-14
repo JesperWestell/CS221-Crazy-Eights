@@ -75,7 +75,8 @@ class PruningAgent(Agent):
 
     def evaluationFunction(self, currentState):
         features = util.stateFeatureExtractor(currentState)
-        optimalScore = util.dot(util.loadWeights('rl_weights.txt'),features)
+        weights = util.loadWeights('rl_weights.txt')
+        optimalScore = util.dot(weights,features)
         return optimalScore
 
 
