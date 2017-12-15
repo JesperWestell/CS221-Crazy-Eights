@@ -15,7 +15,7 @@ python evaluate.py -n 1 -a KeyboardAgent,PruningAgent -v 5
 
 Example: run 100 games between PruningAgent and oracle
 ```bash
-python evaluate.py -n 10 -a PruningAgent,OracleAgent -v 3
+python evaluate.py -n 100 -a PruningAgent,OracleAgent -v 3
 ```
 
 # Code
